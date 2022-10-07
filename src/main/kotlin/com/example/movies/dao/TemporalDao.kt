@@ -1,6 +1,7 @@
 package com.example.movies.dao
 
 import com.example.customer.models.Customer
+import com.example.movies.models.Image
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -9,32 +10,25 @@ import kotlin.io.path.Path
 
 class TemporalDao {
     private val tmpPath = Path("/tmp")
-    private val customerPath = Path(tmpPath.pathString, "customers.json")
+    private val uploadPath = Path(tmpPath.pathString, "upload")
 
-    private val customersListIsEmpty get() = customerPath.readText().isEmpty()
-    private val customersListRead: List<Customer>? get() =
-        if (customersListIsEmpty) {
-            null
-        } else {
-            Json.decodeFromString(customerPath.readText())
-        }
+    private val customersListRead: List<Image> get() =
+            Json.decodeFromString(uploadPath.readText())
 
     init {
-        if (!customerPath.exists()) {
-            customerPath.createFile()
+        if (uploadPath.notExists()) {
+            uploadPath.createDirectory()
         }
     }
 
     fun post(customer: Customer) {
-        if (customerPath.readText().isEmpty()){
-            customerPath.writeText(Json.encodeToString(listOf(customer)))
+        if (uploadPath.readText().isEmpty()){
+            uploadPath.writeText(Json.encodeToString(listOf(customer)))
         } else {
-            val customers: MutableList<Customer> = Json.decodeFromString(customerPath.readText())
+            val customers: MutableList<Customer> = Json.decodeFromString(uploadPath.readText())
             customers.add(customer)
-            customerPath.writeText(Json.encodeToString(customers))
+            uploadPath.writeText(Json.encodeToString(customers))
         }
     }
-
-    fun getAll(): List<Customer>? = customersListRead
 }
 
