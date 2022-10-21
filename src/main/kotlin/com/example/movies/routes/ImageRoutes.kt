@@ -14,7 +14,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.writeBytes
 import kotlin.properties.Delegates
 
-fun Route.customerRouting() {
+fun Route.moviesRouting() {
     val temporalDao = TemporalDao()
     route("/images") {
         get {
@@ -48,14 +48,6 @@ fun Route.customerRouting() {
             call.respondText("No customers found", status = HttpStatusCode.OK)
         }
         get("/uploads/{imageName}") {
-            val imageName = call.parameters["imageName"]
-            var file = File("./uploads/$imageName")
-            if(file.exists()){
-                call.respondFile(File("./uploads/$imageName"))
-            }
-            else{
-                call.respondText("Image not found", status = HttpStatusCode.NotFound)
-            }
         }
 
         get("{id?}") {
